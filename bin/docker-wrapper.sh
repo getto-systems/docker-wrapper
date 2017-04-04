@@ -74,6 +74,7 @@ docker_wrapper_server(){
   : ${docker_wrapper_work_dir:=/}
   : ${docker_wrapper_volumes:=$DOCKER_VOLUMES}
   : ${docker_wrapper_ports:=}
+  : ${docker_wrapper_start_hooks:=}
 
   docker_wrapper_parse_args "$@"
 
@@ -211,6 +212,7 @@ docker_wrapper_start(){
   if [ -z "$(docker_wrapper_is_running -a)" ]; then
     echo "run..."
     docker_wrapper_run
+    docker_wrapper_start_hook "${docker_wrapper_start_hooks[@]}"
   else
     docker_wrapper_status_container_exists
   fi
@@ -256,4 +258,17 @@ docker_wrapper_ps(){
 }
 docker_wrapper_is_running(){
   docker_wrapper_ps --format "{{.ID}}" "$@"
+}
+
+docker_wrapper_start_hook(){
+  local arg
+  local -a args
+  local -a alt_args
+  local -a envs
+
+  while [ $# -gt 0 ]; do
+    arg=$1; shift
+    docker_wrapper_parse_alt_args args $arg
+    docker exec "${args[@]}" "${envs[@]}" $name "${alt_args[@]}"
+  done
 }
