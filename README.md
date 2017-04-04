@@ -47,6 +47,9 @@ docker_wrapper_home=$APP_ROOT or /
 docker_wrapper_work_dir=$APP_ROOT or /
 docker_wrapper_volume=$DOCKER_VOLUMES # DOCKER_VOLUMES="volume:/path/to/volume volume2:/path/to/volume2"
 docker_wrapper_ports="" # "80:80 443:443"
+docker_wrapper_start_hooks=(
+  "-u 1000:1000 -w / -- /path/to/hook"
+)
 
 docker_wrapper_server elixir mix phoenix.server -- "$@"
 ```
