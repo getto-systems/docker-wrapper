@@ -1,0 +1,6 @@
+#!/bin/bash
+
+. bin/docker-wrapper.sh
+. sample/docker_wrapper_images.sh
+
+docker_wrapper_cmd elixir mix "$@"
