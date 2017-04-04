@@ -5,7 +5,7 @@ declare -a docker_wrapper_image_names
 
 docker_wrapper_image(){
   docker_wrapper_images[$1]=$2
-  docker_wrapper_image_names[${docker_wrapper_image_names[@]}]="$1:$2"
+  docker_wrapper_image_names[${#docker_wrapper_image_names[@]}]="$1:$2"
 }
 
 
@@ -68,13 +68,13 @@ docker_wrapper_server(){
   : ${docker_wrapper_hostname:=$(hostname)}
   : ${docker_wrapper_name:=}
   : ${docker_wrapper_user:=1000:1000}
-  : ${docker_wrapper_home:=$APP_ROOT}
-  : ${docker_wrapper_home:=/}
+  : ${docker_wrapper_home:=$HOME}
   : ${docker_wrapper_work_dir:=$APP_ROOT}
   : ${docker_wrapper_work_dir:=/}
   : ${docker_wrapper_volumes:=$DOCKER_VOLUMES}
   : ${docker_wrapper_ports:=}
   : ${docker_wrapper_start_hooks:=}
+  : ${docker_wrapper_shared_volume:=shared}
 
   docker_wrapper_parse_args "$@"
 
@@ -91,6 +91,9 @@ docker_wrapper_server(){
     for volume in $docker_wrapper_volumes; do
       docker_wrapper_opts -v $volume
     done
+  fi
+  if [ $docker_wrapper_home == $HOME ]; then
+    docker_wrapper_opts -v $docker_wrapper_shared_volume:$docker_wrapper_home
   fi
   if [ -n "$docker_wrapper_ports" ]; then
     for port in $docker_wrapper_ports; do
@@ -143,13 +146,17 @@ docker_wrapper_server(){
 }
 
 docker_wrapper_parse_args(){
+  local image_name
+
   image=$1
   shift
 
   image_tag=${docker_wrapper_images["$image"]}
   if [ -z "$image_tag" ]; then
     echo "image not found for '$image'"
-    echo "${docker_wrapper_image_names[@]}"
+    for image_name in ${docker_wrapper_image_names[@]}; do
+      echo $image_name
+    done
     exit 1
   fi
 
@@ -268,7 +275,9 @@ docker_wrapper_start_hook(){
 
   while [ $# -gt 0 ]; do
     arg=$1; shift
-    docker_wrapper_parse_alt_args args $arg
-    docker exec "${args[@]}" "${envs[@]}" $name "${alt_args[@]}"
+    if [ -n "$arg" ]; then
+      docker_wrapper_parse_alt_args args $arg
+      docker exec "${args[@]}" "${envs[@]}" $name "${alt_args[@]}"
+    fi
   done
 }
