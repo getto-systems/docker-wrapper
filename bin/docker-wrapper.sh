@@ -41,7 +41,9 @@ docker_wrapper_cmd(){
     done
   fi
   if [ $docker_wrapper_home == $HOME ]; then
-    docker_wrapper_opts -v $docker_wrapper_shared_volume:$docker_wrapper_home
+    if [ -n "$docker_wrapper_shared_volume" ]; then
+      docker_wrapper_opts -v $docker_wrapper_shared_volume:$docker_wrapper_home
+    fi
   fi
 
   if [ -t 1 ]; then
