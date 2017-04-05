@@ -30,7 +30,11 @@ docker_wrapper_cmd(){
   docker_wrapper_parse_args "$@"
 
   : ${docker_wrapper_name:=${args[0]}}
-  docker_wrapper_opts -h $(docker_wrapper_name $docker_wrapper_hostname-$docker_wrapper_name)
+  if [ "$docker_wrapper_hostname" != no ]; then
+    docker_wrapper_name=${docker_wrapper_hostname}-${docker_wrapper_name}
+  fi
+
+  docker_wrapper_opts -h $(docker_wrapper_name "$docker_wrapper_name")
   docker_wrapper_opts -u $docker_wrapper_user
   docker_wrapper_opts -e HOME=$docker_wrapper_home
   docker_wrapper_opts -w $docker_wrapper_work_dir
@@ -61,6 +65,7 @@ docker_wrapper_server(){
   local name
   local volume
   local port
+  local is_shared_mounted
   local -a opts
   local -a args
   local -a alt_args
@@ -81,7 +86,11 @@ docker_wrapper_server(){
   docker_wrapper_parse_args "$@"
 
   : ${docker_wrapper_name:=${args[@]}}
-  name=$(docker_wrapper_name "$docker_wrapper_hostname-$docker_wrapper_name")
+  if [ "$docker_wrapper_hostname" != no ]; then
+    docker_wrapper_name=${docker_wrapper_hostname}-${docker_wrapper_name}
+  fi
+
+  name=$(docker_wrapper_name "$docker_wrapper_name")
 
   docker_wrapper_opts --name $name
   docker_wrapper_opts -h $name
@@ -91,11 +100,18 @@ docker_wrapper_server(){
 
   if [ -n "$docker_wrapper_volumes" ]; then
     for volume in $docker_wrapper_volumes; do
+      case "$volume" in
+        $docker_wrapper_shared_volume:*)
+          is_shared_mounted=1
+          ;;
+      esac
       docker_wrapper_opts -v $volume
     done
   fi
-  if [ $docker_wrapper_home == $HOME ]; then
-    docker_wrapper_opts -v $docker_wrapper_shared_volume:$docker_wrapper_home
+  if [ -z "$is_shared_mounted" ]; then
+    if [ $docker_wrapper_home == $HOME ]; then
+      docker_wrapper_opts -v $docker_wrapper_shared_volume:$docker_wrapper_home
+    fi
   fi
   if [ -n "$docker_wrapper_ports" ]; then
     for port in $docker_wrapper_ports; do
