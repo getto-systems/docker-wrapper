@@ -1,0 +1,11 @@
+#!/bin/bash
+. docker-wrapper.sh
+docker run \
+  --rm \
+  -u 1000:1000 \
+  -e HOME=$HOME -v shared:$HOME \
+  -it \
+  $(docker_wrapper_volumes) \
+  "${docker_wrapper_envs[@]}" \
+  $(docker_wrapper_image getto/certbot-manual) \
+;
