@@ -30,6 +30,10 @@ mix compile MIX_ENV=prod
 
 ### Commands
 
+```
+phx start
+```
+
 * start : default
 * stop
 * restart
