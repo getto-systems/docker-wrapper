@@ -72,7 +72,7 @@ docker_wrapper_image(){
   if [ -n "$tag" ]; then
     echo $image:$tag
   else
-    >&2 echo "image not found for '$image'"
+    >&2 echo "map not found for '$image'"
     if [ -n "${docker_wrapper_image_names}" ]; then
       >&2 echo "image map:"
       for image in ${docker_wrapper_image_names[@]}; do
