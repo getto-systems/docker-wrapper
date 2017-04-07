@@ -1,0 +1,14 @@
+#!/bin/bash
+. docker-wrapper.sh
+name=$DOCKER_HOSTNAME
+docker_wrapper_server $name
+if [ "$docker_wrapper_server_cmd" == start ]; then
+  docker run \
+    -d \
+    --name $name -h $name \
+    $(docker_wrapper_volumes) \
+    "${docker_wrapper_envs[@]}" \
+    $(docker_wrapper_publish labo.shun) \
+    $(docker_wrapper_image getto/labo.shun) \
+  ;
+fi
