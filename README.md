@@ -3,7 +3,7 @@
 docker wrapper scripts for development
 
 
-## Wrapper Scripts
+## Command-Line Wrapper
 
 * aws
 * certbot-manual : [GitHub](https://github.com/getto-systems/certbot-manual)
@@ -22,7 +22,7 @@ mix compile MIX_ENV=prod
 ```
 
 
-## Server Scripts
+## Server Wrapper
 
 * labo.shun : [GitHub](https://github.com/shun-getto-systems/labo)
 * lr : npm run livereload
