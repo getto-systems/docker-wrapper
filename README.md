@@ -3,78 +3,60 @@
 docker wrapper scripts for development
 
 
-## Usage
+## Wrapper Scripts
 
-### run command
+* aws
+* certbot-manual : [GitHub](https://github.com/getto-systems/certbot-manual)
+* elm
+* elx : elixir
+* gcloud
+* iex
+* mix
+* node : run command in node container
+* npm
 
-```bash
-# mix
-#!/bin/bash
+### Pass Env Vars
 
-. docker-wrapper.sh
-. docker-wrapper-image.sh
-
-# variables and defaults
-docker_wrapper_hostname=$(hostname) # using host, name prefix
-docker_wrapper_user=1000:1000
-docker_wrapper_home=$HOME
-docker_wrapper_work_dir=$(pwd)
-docker_wrapper_volumes=$DOCKER_VOLUMES # DOCKER_VOLUMES="volume:/path/to/volume volume2:/path/to/volume2"
-docker_wrapper_shared_volume=shared # if [ $home == $HOME ]; then -v shared:$HOME
-
-docker_wrapper_cmd elixir mix "$@"
+```
+mix compile MIX_ENV=prod
 ```
 
-```bash
-$ mix deps.get
-$ mix compile MIX_ENV=prod
-```
 
-### start/stop server
+## Server Scripts
 
-```bash
-# phx
-#!/bin/bash
+* labo.shun : [GitHub](https://github.com/shun-getto-systems/labo)
+* lr : npm run livereload
+* phx : elixir phoenix server
 
-. docker-wrapper.sh
-. docker-wrapper-image.sh
+### Commands
 
-# variables and defaults
-docker_wrapper_hostname=$(hostname) # using host, name prefix
-docker_wrapper_name=$@ # using host, name suffix : default: command arguments
-docker_wrapper_user=1000:1000
-docker_wrapper_home=$APP_ROOT or /
-docker_wrapper_work_dir=$APP_ROOT or /
-docker_wrapper_volume=$DOCKER_VOLUMES # DOCKER_VOLUMES="volume:/path/to/volume volume2:/path/to/volume2"
-docker_wrapper_ports="" # "80:80 443:443"
-docker_wrapper_start_hooks=(
-  # "-u 1000:1000 -- /path/to/hook" # docker exec -u 1000:1000 exec $name /path/to/hook
-)
-
-docker_wrapper_server elixir mix phoenix.server -- "$@"
-```
-
-```bash
-$ phx # start
-$ phx start MIX_ENV=dev
-$ phx stop
-$ phx restart
-$ phx logs
-$ phx status
-$ phx ps
-```
+* start : default
+* stop
+* restart
+* logs
+* status
+* ps
 
 
 ## Install
 
-* add `path/to/docker-wrapper/bin` to PATH
-* setup docker-wrapper-image.sh
+* setup path
+* setup docker-wrapper.rc.sh
 
-### setup docker-wrapper-image.sh
+### setup path
 
-```bash
-# docker-wrapper-image.sh
-
-docker_wrapper_image elixir 1.4.2
+```
+export PATH=/path/to/docker-wrapper/bin:$PATH
 ```
 
+### setup docker-wrapper.rc.sh
+
+```
+# docker-wrapper.rc.sh
+
+docker_wrapper_map elixir 1.4.2
+
+docker_wrapper_port phoenix 4000:4000
+```
+
+* put docker-wrapper.rc.sh in anywhere under $PATH
