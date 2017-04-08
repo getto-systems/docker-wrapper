@@ -28,6 +28,10 @@ mix compile MIX_ENV=prod
 * lr : npm run livereload
 * phx : elixir phoenix server
 
+```
+export DOCKER_HOSTNAME=$(hostname)
+```
+
 ### Commands
 
 ```
