@@ -20,7 +20,7 @@ docker_wrapper_parse_args(){
         docker_wrapper_args[${#docker_wrapper_args[@]}]=$1
         ;;
       *=*)
-        docker_wrapper_envs[${#docker_wrapper_envs[@]}]="-e $1"
+        docker_wrapper_envs[${#docker_wrapper_envs[@]}]="-e$1"
         ;;
       *)
         docker_wrapper_args[${#docker_wrapper_args[@]}]=$1
