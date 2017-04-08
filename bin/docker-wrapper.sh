@@ -220,10 +220,5 @@ docker_wrapper_server_is_running(){
 # load map definitions
 . docker-wrapper.rc.sh
 
-# load DOCKER_${ENV}
-if [ -f /etc/docker-env ]; then
-  eval "$(cat /etc/docker-env | sed 's/^/export /')"
-fi
-
 docker_wrapper_parse_args "$@"
 docker_wrapper_check_tty
