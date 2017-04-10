@@ -30,10 +30,14 @@ docker_wrapper_parse_args(){
   done
 }
 docker_wrapper_arg(){
-  docker_wrapper_args[${#docker_wrapper_args[@]}]=$1
+  while [ $# -gt 0 ]; do
+    docker_wrapper_args[${#docker_wrapper_args[@]}]=$1; shift
+  done
 }
 docker_wrapper_env(){
-  docker_wrapper_envs[${#docker_wrapper_envs[@]}]=$1
+  while [ $# -gt 0 ]; do
+    docker_wrapper_envs[${#docker_wrapper_envs[@]}]=$1; shift
+  done
 }
 
 docker_wrapper_home(){
@@ -59,8 +63,8 @@ docker_wrapper_volumes(){
   local volume
   local -a opts
 
-  if [ -n "$DOCKER_VOLUMES" ]; then
-    for volume in $DOCKER_VOLUMES; do
+  if [ -n "$DOCKER_WRAPPER_VOLUMES" ]; then
+    for volume in $DOCKER_WRAPPER_VOLUMES; do
       docker_wrapper_opt -v $volume
     done
   fi
