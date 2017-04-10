@@ -41,7 +41,7 @@ docker_wrapper_env(){
 }
 
 docker_wrapper_home(){
-  echo -e HOME=$HOME -v dotfiles:$HOME
+  echo "-eHOME=$HOME" "-v" "dotfiles:$HOME"
 }
 
 docker_wrapper_check_tty(){
@@ -98,7 +98,9 @@ docker_wrapper_image(){
 }
 
 docker_wrapper_server_env(){
-  docker_wrapper_server_envs[$1]="$@"
+  local service
+  service=$1; shift
+  docker_wrapper_server_envs[$service]="$@"
 }
 
 docker_wrapper_opt(){
@@ -119,7 +121,7 @@ docker_wrapper_server(){
 
   docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service
 
-  docker_wrapper_env "${docker_wrapper_server_envs[$service]}"
+  docker_wrapper_env ${docker_wrapper_server_envs[$service]}
 
   mode=${docker_wrapper_args[0]}
   if [ -z "$mode" ]; then
