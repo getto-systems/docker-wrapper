@@ -4,7 +4,7 @@ docker run \
   --rm \
   -u 1000:1000 \
   -w $(pwd) \
-  -e HOME=$HOME -v shared:$HOME \
+  $(docker_wrapper_home) \
   $(docker_wrapper_tty) \
   $(docker_wrapper_volumes) \
   -e PATH=$(node bash -c 'echo $PATH'):$APP_ROOT/node_modules/.bin
