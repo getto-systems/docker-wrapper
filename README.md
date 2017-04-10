@@ -66,7 +66,7 @@ export PATH=/path/to/docker-wrapper/bin:$PATH
 
 docker_wrapper_map elixir 1.4.2
 
-docker_wrapper_server_env phoenix -p4000:4000
+docker_wrapper_server_env phoenix -p 4000:4000
 ```
 
 * put docker-wrapper.rc.sh in anywhere under $PATH
