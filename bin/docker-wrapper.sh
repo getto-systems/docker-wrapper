@@ -3,31 +3,41 @@
 declare -A docker_wrapper_images
 declare -a docker_wrapper_image_names
 
-declare -A docker_wrapper_ports
-declare -a docker_wrapper_port_names
+declare -A docker_wrapper_server_envs
 
 declare -a docker_wrapper_args
 declare -a docker_wrapper_envs
 
 declare docker_wrapper_has_tty
 
+declare docker_wrapper_server_name
 declare docker_wrapper_server_cmd
 
 docker_wrapper_parse_args(){
   while [ $# -gt 0 ]; do
     case "$1" in
       -*)
-        docker_wrapper_args[${#docker_wrapper_args[@]}]=$1
+        docker_wrapper_arg $1
         ;;
       *=*)
-        docker_wrapper_envs[${#docker_wrapper_envs[@]}]="-e$1"
+        docker_wrapper_env "-e$1"
         ;;
       *)
-        docker_wrapper_args[${#docker_wrapper_args[@]}]=$1
+        docker_wrapper_arg $1
         ;;
     esac
     shift
   done
+}
+docker_wrapper_arg(){
+  docker_wrapper_args[${#docker_wrapper_args[@]}]=$1
+}
+docker_wrapper_env(){
+  docker_wrapper_envs[${#docker_wrapper_envs[@]}]=$1
+}
+
+docker_wrapper_home(){
+  echo -e HOME=$HOME -v dotfiles:$HOME
 }
 
 docker_wrapper_check_tty(){
@@ -83,28 +93,8 @@ docker_wrapper_image(){
   fi
 }
 
-docker_wrapper_port(){
-  docker_wrapper_ports[$1]=$2
-  docker_wrapper_port_names[${#docker_wrapper_port_names[@]}]="$1:$2"
-}
-docker_wrapper_publish(){
-  local service
-  local port
-
-  service=$1
-  port=${docker_wrapper_ports[$service]}
-
-  if [ -n "$port" ]; then
-    echo -p $port
-  else
-    >&2 echo "port not found for '$service'"
-    if [ -n "${docker_wrapper_port_names}" ]; then
-      >&2 echo "port map:"
-      for service in ${docker_wrapper_port_names[@]}; do
-        >&2 echo "  $service"
-      done
-    fi
-  fi
+docker_wrapper_server_env(){
+  docker_wrapper_server_envs[$1]="$@"
 }
 
 docker_wrapper_opt(){
@@ -114,14 +104,18 @@ docker_wrapper_opt(){
 }
 
 docker_wrapper_server(){
-  local name
+  local service
   local mode
 
-  name=$1; shift
-  if [ -z "$name" ]; then
-    >&2 echo "usage: docker_wrapper_server <name>"
+  service=$1; shift
+  if [ -z "$service" ]; then
+    >&2 echo "usage: docker_wrapper_server <service>"
     return
   fi
+
+  docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service
+
+  docker_wrapper_server_env "${docker_wrapper_server_envs[$service]}"
 
   mode=${docker_wrapper_args[0]}
   if [ -z "$mode" ]; then
@@ -162,6 +156,9 @@ docker_wrapper_server(){
       ;;
   esac
 }
+docker_wrapper_server_name(){
+  echo --name $docker_wrapper_server_name -h $docker_wrapper_server_name
+}
 docker_wrapper_server_start(){
   if [ -z "$(docker_wrapper_server_is_running -a)" ]; then
     docker_wrapper_server_cmd=start
@@ -174,14 +171,14 @@ docker_wrapper_server_purge(){
     docker_wrapper_server_status_not_running
   else
     echo "stop..."
-    docker stop $name
+    docker stop $docker_wrapper_server_name
     echo "rm..."
-    docker rm $name
+    docker rm $docker_wrapper_server_name
   fi
 }
 docker_wrapper_server_logs(){
   if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
-    docker logs $name
+    docker logs $docker_wrapper_server_name
   else
     docker_wrapper_server_status_not_running
   fi
@@ -206,7 +203,7 @@ docker_wrapper_server_status_container_exists(){
 }
 
 docker_wrapper_server_ps(){
-  docker ps -f name=$name "$@"
+  docker ps -f name=$docker_wrapper_server_name "$@"
 }
 docker_wrapper_server_is_running(){
   docker_wrapper_server_ps --format "{{.ID}}" "$@"

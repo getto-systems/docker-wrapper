@@ -1,17 +1,15 @@
 #!/bin/bash
 . docker-wrapper.sh
-name=$DOCKER_HOSTNAME-phoenix
-docker_wrapper_server $name
+docker_wrapper_server phoenix
 if [ "$docker_wrapper_server_cmd" == start ]; then
   docker run \
     -d \
     -u 1000:1000 \
     -w $APP_ROOT \
-    -e HOME=$HOME -v shared:$HOME \
-    --name $name -h $name \
+    $(docker_wrapper_server_name) \
+    $(docker_wrapper_home) \
     $(docker_wrapper_volumes) \
     "${docker_wrapper_envs[@]}" \
-    $(docker_wrapper_publish phoenix) \
     $(docker_wrapper_image elixir) \
     mix phoenix.server \
   ;
