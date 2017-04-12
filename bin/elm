@@ -7,7 +7,7 @@ docker run \
   $(docker_wrapper_home) \
   $(docker_wrapper_tty) \
   $(docker_wrapper_volumes) \
-  -e PATH=$(node bash -c 'echo $PATH'):$APP_ROOT/node_modules/.bin
+  -e PATH=$(node env | grep PATH= | cut -d= -f2):$APP_ROOT/node_modules/.bin \
   "${docker_wrapper_envs[@]}" \
   $(docker_wrapper_image node) \
   elm "${docker_wrapper_args[@]}" \
