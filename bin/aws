@@ -8,6 +8,6 @@ docker run \
   $(docker_wrapper_tty) \
   $(docker_wrapper_volumes) \
   "${docker_wrapper_envs[@]}" \
-  $(docker_wrapper_image getto/aws) \
+  $(docker_wrapper_image getto/awscli) \
   aws "${docker_wrapper_args[@]}" \
 ;
