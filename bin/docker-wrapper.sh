@@ -3,8 +3,6 @@
 declare -A docker_wrapper_images
 declare -a docker_wrapper_image_names
 
-declare -A docker_wrapper_server_envs
-
 declare -a docker_wrapper_args
 declare -a docker_wrapper_envs
 
@@ -97,12 +95,6 @@ docker_wrapper_image(){
   fi
 }
 
-docker_wrapper_server_env(){
-  local service
-  service=$1; shift
-  docker_wrapper_server_envs[$service]="$@"
-}
-
 docker_wrapper_opt(){
   while [ $# -gt 0 ]; do
     opts[${#opts[@]}]=$1; shift
@@ -121,7 +113,7 @@ docker_wrapper_server(){
 
   docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service
 
-  docker_wrapper_env ${docker_wrapper_server_envs[$service]}
+  docker_wrapper_server_env_$service
 
   mode=${docker_wrapper_args[0]}
   if [ -z "$mode" ]; then
