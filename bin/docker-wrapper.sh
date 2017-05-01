@@ -15,13 +15,13 @@ docker_wrapper_parse_args(){
   while [ $# -gt 0 ]; do
     case "$1" in
       -*)
-        docker_wrapper_arg $1
+        docker_wrapper_arg "$1"
         ;;
       *=*)
         docker_wrapper_env "-e$1"
         ;;
       *)
-        docker_wrapper_arg $1
+        docker_wrapper_arg "$1"
         ;;
     esac
     shift
@@ -82,7 +82,14 @@ docker_wrapper_image(){
   tag=${docker_wrapper_images[$image]}
 
   if [ -n "$tag" ]; then
-    echo $image:$tag
+    case "$tag" in
+      *:*)
+        echo $tag
+        ;;
+      *)
+        echo $image:$tag
+        ;;
+    esac
   else
     >&2 echo "map not found for '$image'"
     if [ -n "${docker_wrapper_image_names}" ]; then
