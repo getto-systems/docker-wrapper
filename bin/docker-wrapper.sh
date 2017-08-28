@@ -17,6 +17,9 @@ docker_wrapper_parse_args(){
       -*)
         docker_wrapper_arg "$1"
         ;;
+      ENV_FILE=*)
+        docker_wrapper_env "--env-file" "${1#ENV_FILE=}"
+        ;;
       *=*)
         docker_wrapper_env "-e$1"
         ;;
