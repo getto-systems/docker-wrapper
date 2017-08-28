@@ -1,0 +1,14 @@
+#!/bin/bash
+. docker-wrapper.sh
+docker_wrapper_server flight
+if [ "$docker_wrapper_server_cmd" == start ]; then
+  docker run \
+    -d \
+    -w $APP_ROOT \
+    $(docker_wrapper_server_name) \
+    $(docker_wrapper_home) \
+    $(docker_wrapper_volumes) \
+    "${docker_wrapper_envs[@]}" \
+    $(docker_wrapper_image flight) \
+  ;
+fi
