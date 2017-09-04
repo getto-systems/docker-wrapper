@@ -1,8 +1,5 @@
 #!/bin/bash
 
-declare -A docker_wrapper_images
-declare -a docker_wrapper_image_names
-
 declare -a docker_wrapper_args
 declare -a docker_wrapper_envs
 
@@ -42,7 +39,7 @@ docker_wrapper_env(){
 }
 
 docker_wrapper_home(){
-  echo "-eHOME=$HOME" "-v" "dotfiles:$HOME"
+  echo "-eHOME=$HOME"
 }
 
 docker_wrapper_check_tty(){
@@ -61,28 +58,19 @@ docker_wrapper_tty(){
 }
 
 docker_wrapper_volumes(){
-  local volume
-  local -a opts
-
   if [ -n "$DOCKER_WRAPPER_VOLUMES" ]; then
-    for volume in $DOCKER_WRAPPER_VOLUMES; do
-      docker_wrapper_opt -v $volume
-    done
+    echo -v ${DOCKER_WRAPPER_VOLUMES//,/ -v }
   fi
-
-  echo "${opts[@]}"
 }
 
-docker_wrapper_map(){
-  docker_wrapper_images[$1]=$2
-  docker_wrapper_image_names[${#docker_wrapper_image_names[@]}]="$1:$2"
-}
 docker_wrapper_image(){
   local image
+  local tag_var_name
   local tag
 
   image=$1
-  tag=${docker_wrapper_images[$image]}
+  tag_var_name=DOCKER_WRAPPER_IMAGE_$image
+  tag=${!tag_var_name}
 
   if [ -n "$tag" ]; then
     case "$tag" in
@@ -95,12 +83,6 @@ docker_wrapper_image(){
     esac
   else
     >&2 echo "map not found for '$image'"
-    if [ -n "${docker_wrapper_image_names}" ]; then
-      >&2 echo "image map:"
-      for image in ${docker_wrapper_image_names[@]}; do
-        >&2 echo "  $image"
-      done
-    fi
     echo $image:-unknown
   fi
 }
@@ -113,6 +95,8 @@ docker_wrapper_opt(){
 
 docker_wrapper_server(){
   local service
+  local service_opts_name
+  local service_opts
   local mode
 
   service=$1; shift
@@ -120,10 +104,14 @@ docker_wrapper_server(){
     >&2 echo "usage: docker_wrapper_server <service>"
     return
   fi
+  service_opts_name=DOCKER_WRAPPER_SERVER_OPTS_$service
+  service_opts=${!service_opts_name}
 
   docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service
 
-  docker_wrapper_server_env_$service
+  if [ -n "$service_opts" ]; then
+    docker_wrapper_env $service_opts
+  fi
 
   mode=${docker_wrapper_args[0]}
   if [ -z "$mode" ]; then
@@ -221,9 +209,6 @@ docker_wrapper_server_is_running(){
 ##
 # ENTRYPOINT
 #
-
-# load map definitions
-. docker-wrapper.rc.sh
 
 docker_wrapper_parse_args "$@"
 docker_wrapper_check_tty
