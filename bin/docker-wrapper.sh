@@ -1,6 +1,5 @@
 #!/bin/bash
 
-declare -a docker_wrapper_args
 declare -a docker_wrapper_envs
 
 declare docker_wrapper_has_tty
@@ -8,38 +7,51 @@ declare docker_wrapper_has_tty
 declare docker_wrapper_server_name
 declare docker_wrapper_server_cmd
 
-docker_wrapper_parse_args(){
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      -*)
-        docker_wrapper_arg "$1"
-        ;;
-      ENV_FILE=*)
-        docker_wrapper_env "--env-file" "${1#ENV_FILE=}"
-        ;;
-      *=*)
-        docker_wrapper_env "-e$1"
-        ;;
-      *)
-        docker_wrapper_arg "$1"
-        ;;
-    esac
-    shift
-  done
-}
-docker_wrapper_arg(){
-  while [ $# -gt 0 ]; do
-    docker_wrapper_args[${#docker_wrapper_args[@]}]=$1; shift
-  done
-}
 docker_wrapper_env(){
   while [ $# -gt 0 ]; do
     docker_wrapper_envs[${#docker_wrapper_envs[@]}]=$1; shift
   done
 }
 
-docker_wrapper_home(){
-  echo "-eHOME=$HOME"
+docker_wrapper_set_env_from_current_env(){
+  local ifs_org
+  local line
+  local env_file
+
+  ifs_org=$IFS
+  IFS=$'\n'
+  for line in $(env); do
+    IFS=$ifs_org
+    case "$line" in
+      ENV_FILES=*)
+        ifs_org=$IFS
+        IFS=,
+        for env_file in ${line#ENV_FILES=}; do
+          IFS=$ifs_org
+          docker_wrapper_env --env-file $env_file
+        done
+        ;;
+      *)
+        if docker_wrapper_set_env_from_current_env_include $line; then
+          docker_wrapper_env "-e$line"
+        fi
+        ;;
+    esac
+  done
+}
+docker_wrapper_set_env_from_current_env_include(){
+  local exclude_env
+
+  ifs_org=$IFS
+  IFS=,
+  for exclude_env in ${DOCKER_WRAPPER_EXCLUDE_ENVS:-PATH,LANG}; do
+    IFS=$ifs_org
+    case "$line" in
+      ${exclude_env}=*)
+        return 1
+        ;;
+    esac
+  done
 }
 
 docker_wrapper_check_tty(){
@@ -48,13 +60,9 @@ docker_wrapper_check_tty(){
   fi
 }
 docker_wrapper_tty(){
-  local -a opts
-
   if [ -n "$docker_wrapper_has_tty" ]; then
-    docker_wrapper_opt -it --detach-keys ctrl-@,ctrl-@
+    echo -it --detach-keys ctrl-@,ctrl-@
   fi
-
-  echo "${opts[@]}"
 }
 
 docker_wrapper_volumes(){
@@ -87,19 +95,15 @@ docker_wrapper_image(){
   fi
 }
 
-docker_wrapper_opt(){
-  while [ $# -gt 0 ]; do
-    opts[${#opts[@]}]=$1; shift
-  done
-}
-
 docker_wrapper_server(){
   local service
+  local mode
   local service_opts_name
   local service_opts
-  local mode
 
   service=$1; shift
+  mode=$1; shift
+
   if [ -z "$service" ]; then
     >&2 echo "usage: docker_wrapper_server <service>"
     return
@@ -113,7 +117,6 @@ docker_wrapper_server(){
     docker_wrapper_env $service_opts
   fi
 
-  mode=${docker_wrapper_args[0]}
   if [ -z "$mode" ]; then
     mode=start
   fi
@@ -210,5 +213,5 @@ docker_wrapper_server_is_running(){
 # ENTRYPOINT
 #
 
-docker_wrapper_parse_args "$@"
 docker_wrapper_check_tty
+docker_wrapper_set_env_from_current_env
