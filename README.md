@@ -3,45 +3,6 @@
 docker wrapper scripts for development
 
 
-## Command-Line Wrapper
-
-* aws
-* certbot-manual : [GitHub](https://github.com/getto-systems/certbot-manual)
-* elm
-* elx : elixir
-* gcloud
-* iex
-* mix
-* node : run command in node container
-* npm
-
-### Pass Env Vars
-
-```
-mix compile MIX_ENV=prod
-```
-
-
-## Server Wrapper
-
-* labo.shun : [GitHub](https://github.com/shun-getto-systems/labo)
-* lr : npm run livereload
-* phx : elixir phoenix server
-
-### Commands
-
-```
-phx start
-```
-
-* start : default
-* stop
-* restart
-* logs
-* status
-* ps
-
-
 ## Env Vars
 
 * `DOCKER_WRAPPER_VOLUMES` : "volume:/path/to/volume volume2:/path/to/volume2"
