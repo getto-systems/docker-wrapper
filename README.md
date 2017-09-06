@@ -1,95 +1,96 @@
 # docker-wrapper
 
-docker wrapper scripts for development
+utility for wrap `docker run` command
 
 
-## Env Vars
+## Usage
 
-* `DOCKER_WRAPPER_VOLUMES` : "volume:/path/to/volume volume2:/path/to/volume2"
-* `DOCKER_WRAPPER_SERVER_HOSTNAME` : use in `docker_wrapper_server`
+### command-line tool
 
-
-## Install
-
-* setup path
-* setup docker-wrapper.rc.sh
-
-### setup path
-
-```
-export PATH=/path/to/docker-wrapper/bin:$PATH
-```
-
-### setup docker-wrapper.rc.sh
-
-```
-# docker-wrapper.rc.sh
-
-docker_wrapper_map elixir 1.4.2
-
-docker_wrapper_server_env_phoenix(){
-  docker_wrapper_env -p 4000:4000
-}
+```bash
+#!/bin/bash
+. docker-wrapper.sh
+docker run \
+  --rm \
+  -u 1000:1000 \
+  -w $(pwd) \
+  $(docker_wrapper_tty) \
+  $(docker_wrapper_volumes) \
+  "${docker_wrapper_envs[@]}" \
+  $(docker_wrapper_image ruby) \
+  ruby "$@" \
+;
 ```
 
-* put docker-wrapper.rc.sh in anywhere under $PATH
+#### environment variables
+
+- DOCKER_WRAPPER_IMAGE_{image-name} : docker_wrapper_image ruby -> image-name = ruby
+- DOCKER_WRAPPER_VOLUMES : comma separated volume specification : e.g. dotfiles:/home/labo,apps:/apps
+
+
+### server
+
+```bash
+#!/bin/bash
+. docker-wrapper.sh
+docker_wrapper_server phoenix "$@"
+if [ "$docker_wrapper_server_cmd" == start ]; then
+  docker run \
+    -d \
+    -u 1000:1000 \
+    -w $APP_ROOT \
+    $(docker_wrapper_server_name) \
+    $(docker_wrapper_volumes) \
+    "${docker_wrapper_envs[@]}" \
+    $(docker_wrapper_image elixir) \
+    mix phoenix.server \
+  ;
+fi
+```
+
+#### environment variables
+
+- DOCKER_WRAPPER_SERVER_HOSTNAME : --name ${DOCKER_WRAPPER_SERVER_HOSTNAME}-{server-name}
+- DOCKER_WRAPPER_SERVER_OPTS_{server-name} : docker_wrapper_server phoenix -> server-name = phoenix
+- DOCKER_WRAPPER_IMAGE_{image-name} : docker_wrapper_image elixir -> image-name = elixir
+- DOCKER_WRAPPER_VOLUMES : comma separated volume specification : e.g. dotfiles:/home/labo,apps:/apps
 
 
 ## Utility
 
-### docker_wrapper_args, docker_wrapper_envs
+### docker_wrapper_envs
 
-```
-# $@ <= "cmd" "arg1" "arg2" "ENV1=VAL1" "ENV2=VAL2"
-${docker_wrapper_args[@]} => "cmd" "arg1" "arg2"
-${docker_wrapper_envs[@]} => "-eENV1=VAL1" "-eENV2=VAL2"
-```
+- all env vars in current env
+- without DOCKER_WRAPPER_EXCLUDE_ENVS (default: PATH,LANG)
 
-* init on load docker-wrapper.sh
-
-### docker_wrapper_home
-
-```
-$(docker_wrapper_home) => "-e" "HOME=$HOME" "-v" "dotfiles:$HOME/.dotfiles"
-```
 
 ### docker_wrapper_tty
 
+```bash
+$(docker_wrapper_tty) # => -it -detach-keys ctrl-@,ctrl-@ # if [ -t 1 ]
 ```
-$(docker_wrapper_tty) => "-it" "-detach-keys" "ctrl-@,ctrl-@"
-```
-
-* `if [ -t 1 ]`, docker_wrapper_tty echo options above
 
 ### docker_wrapper_volumes
 
-```
-# $DOCKER_WRAPPER_VOLUMES <= "volume:/path/to/volume volume2:/path/to/volume2"
-$(docker_wrapper_volumes) => "-v volume:/path/to/volume" "-v volume2:/path/to/volume2"
+```bash
+DOCKER_WRAPPER_VOLUMES=volume:/path/to/volume,volume2:/path/to/volume2
+$(docker_wrapper_volumes) # => -v volume:/path/to/volume -v volume2:/path/to/volume2
 ```
 
 ### docker_wrapper_image
 
-```
-docker_wrapper_map elixir 1.4.2
-$(docker_wrapper_image elixir) => "elixir:1.4.2"
+```bash
+DOCKER_WRAPPER_IMAGE_ruby=2.4.1
+$(docker_wrapper_image ruby) => ruby:2.4.1
 ```
 
 ### docker_wrapper_server
 
 ```
+DOCKER_WRAPPER_SERVER_OPTS_phoenix=-p 4000:4000
 docker_wrapper_server phoenix
 if [ "$docker_wrapper_server_cmd" == start ]; then
-  docker run ...
+  ${docker_wrapper_envs[@]} # => -p 4000:4000 ( and many other envs )
 fi
-```
-
-### docker_wrapper_server_env_${service}
-
-```
-docker_wrapper_server_env_phoenix(){
-  # setup server env vars
-  docker_wrapper_env ...
-}
 ```
 
