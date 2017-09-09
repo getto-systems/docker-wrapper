@@ -32,8 +32,8 @@ docker_wrapper_set_env_from_current_env(){
         done
         ;;
       *)
-        if docker_wrapper_set_env_from_current_env_include $line; then
-          docker_wrapper_env "-e$line"
+        if docker_wrapper_set_env_from_current_env_include; then
+          docker_wrapper_env -e "$line"
         fi
         ;;
     esac
@@ -42,9 +42,11 @@ docker_wrapper_set_env_from_current_env(){
 docker_wrapper_set_env_from_current_env_include(){
   local exclude_env
 
+  : ${DOCKER_WRAPPER_EXCLUDE_ENVS:=PATH,LANG,FPATH,_*,ZPLUG_*,DOCKER_WRAPPER_*,TERM*,SUDO*,*USER,USERNAME,LOGNAME}
+
   ifs_org=$IFS
   IFS=,
-  for exclude_env in ${DOCKER_WRAPPER_EXCLUDE_ENVS:-PATH,LANG}; do
+  for exclude_env in $DOCKER_WRAPPER_EXCLUDE_ENVS; do
     IFS=$ifs_org
     case "$line" in
       ${exclude_env}=*)
