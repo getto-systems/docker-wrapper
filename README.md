@@ -63,11 +63,26 @@ $(docker_wrapper_tty) # => -it -detach-keys ctrl-@,ctrl-@ # if [ -t 1 ]
 
 ## Environment variables
 
-- DOCKER_WRAPPER_EXCLUDE_ENVS : list of env-name that don't take over to docker from current-env
-- DOCKER_WRAPPER_VOLUMES : list of volume-spec
-- DOCKER_WRAPPER_IMAGE_{image-name} : specify image-name's image
-- DOCKER_WRAPPER_SERVER_HOSTNAME_{server-name} : specify server-name's hostname
-- DOCKER_WRAPPER_SERVER_OPTS_{server-name} : specify server-name's additional options
+### DOCKER_WRAPPER_EXCLUDE_ENVS : PATH,LANG
+
+list of env-name that don't take over to docker from current-env
+
+### DOCKER_WRAPPER_VOLUMES
+
+list of volume-spec
+
+### DOCKER_WRAPPER_IMAGE_image-name
+
+specify image-name's image
+
+### DOCKER_WRAPPER_SERVER_HOSTNAME_server-name
+
+specify server-name's hostname
+
+### DOCKER_WRAPPER_SERVER_OPTS_server-name
+
+specify server-name's additional options
+
 
 ## Examples
 
