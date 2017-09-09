@@ -61,7 +61,7 @@ docker_wrapper_check_tty(){
 }
 docker_wrapper_tty(){
   if [ -n "$docker_wrapper_has_tty" ]; then
-    echo -it --detach-keys ctrl-@,ctrl-@
+    echo "-it --detach-keys ctrl-[,ctrl-["
   fi
 }
 
