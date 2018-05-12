@@ -7,6 +7,14 @@ declare docker_wrapper_has_tty
 declare docker_wrapper_server_name
 declare docker_wrapper_server_cmd
 
+docker_wrapper_docker(){
+  local sudo
+  if [ -n "$DOCKER_WRAPPER_WITH_SUDO" ]; then
+    sudo="sudo"
+  fi
+  ${sudo} docker "$@"
+}
+
 docker_wrapper_env(){
   while [ $# -gt 0 ]; do
     docker_wrapper_envs[${#docker_wrapper_envs[@]}]=$1; shift
@@ -172,14 +180,14 @@ docker_wrapper_server_purge(){
     docker_wrapper_server_status_not_running
   else
     echo "stop..."
-    docker stop $docker_wrapper_server_name
+    docker_wrapper_docker stop $docker_wrapper_server_name
     echo "rm..."
-    docker rm $docker_wrapper_server_name
+    docker_wrapper_docker rm $docker_wrapper_server_name
   fi
 }
 docker_wrapper_server_logs(){
   if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
-    docker logs $docker_wrapper_server_name
+    docker_wrapper_docker logs $docker_wrapper_server_name
   else
     docker_wrapper_server_status_not_running
   fi
@@ -204,7 +212,7 @@ docker_wrapper_server_status_container_exists(){
 }
 
 docker_wrapper_server_ps(){
-  docker ps -f name=$docker_wrapper_server_name "$@"
+  docker_wrapper_docker ps -f name=$docker_wrapper_server_name "$@"
 }
 docker_wrapper_server_is_running(){
   docker_wrapper_server_ps --format "{{.ID}}" "$@"
