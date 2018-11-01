@@ -85,23 +85,45 @@ docker_wrapper_image(){
   local image
   local tag_var_name
   local tag
+  local spec
 
   image=$1
+
   tag_var_name=DOCKER_WRAPPER_IMAGE_$image
   tag=${!tag_var_name}
 
   if [ -n "$tag" ]; then
     case "$tag" in
       *:*)
-        echo $tag
+        spec=$tag
         ;;
       *)
-        echo $image:$tag
+        spec=$image:$tag
         ;;
     esac
+
+    docker_wrapper_update
+
+    echo $spec
   else
     >&2 echo "map not found for '$image'"
     echo $image:-unknown
+  fi
+}
+docker_wrapper_update(){
+  local created
+  local expired
+
+  if [ -n "$DOCKER_WRAPPER_UPDATE_EXPIRE" ]; then
+    created=$(docker_wrapper_docker image inspect $spec | grep Created | cut -d'"' -f4)
+    if [ -n "$created" ]; then
+      created=$(date -d"$created" +%Y%m%d%H%M%S)
+    fi
+    expired=$(date -d"$DOCKER_WRAPPER_UPDATE_EXPIRE" +%Y%m%d%H%M%S)
+
+    if [ "$created" -gt "$expired" ]; then
+      docker_wrapper_docker pull $spec >&2
+    fi
   fi
 }
 
