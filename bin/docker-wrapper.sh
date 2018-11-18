@@ -122,7 +122,7 @@ docker_wrapper_update(){
       created=$(date -d"$created" +%Y%m%d%H%M%S)
       expired=$(date -d"$DOCKER_WRAPPER_UPDATE_EXPIRE" +%Y%m%d%H%M%S)
 
-      if [ "$created" -gt "$expired" ]; then
+      if [ "$created" -lt "$expired" ]; then
         docker_wrapper_docker pull $spec >&2
       fi
     fi
