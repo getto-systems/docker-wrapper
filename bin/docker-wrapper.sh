@@ -111,21 +111,8 @@ docker_wrapper_image(){
   fi
 }
 docker_wrapper_update(){
-  local created
-  local expired
-
-  if [ -n "$DOCKER_WRAPPER_UPDATE_EXPIRE" ]; then
-    created=$(docker_wrapper_docker image inspect $spec | grep Created | cut -d'"' -f4)
-    if [ -z "$created" ]; then
-      docker_wrapper_docker pull $spec >&2
-    else
-      created=$(date -d"$created" +%Y%m%d%H%M%S)
-      expired=$(date -d"$DOCKER_WRAPPER_UPDATE_EXPIRE" +%Y%m%d%H%M%S)
-
-      if [ "$created" -lt "$expired" ]; then
-        docker_wrapper_docker pull $spec >&2
-      fi
-    fi
+  if [ -n "$DOCKER_WRAPPER_UPDATE" ]; then
+    docker_wrapper_docker pull $spec >&2
   fi
 }
 
