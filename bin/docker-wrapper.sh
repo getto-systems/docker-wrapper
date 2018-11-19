@@ -165,6 +165,11 @@ docker_wrapper_server(){
     ps)
       docker_wrapper_server_ps -a
       ;;
+    pull)
+      docker_wrapper_server_purge
+      docker_wrapper_server_pull
+      docker_wrapper_server_start
+      ;;
     *)
       echo "unknown option '$mode'"
       echo
@@ -174,8 +179,10 @@ docker_wrapper_server(){
       echo "  stop : stop server if running"
       echo "  restart : stop and start server"
       echo "  logs : show server logs"
+      echo "  attach : attach server container"
       echo "  status : check for running"
       echo "  ps : show docker ps"
+      echo "  pull : pull latest image and start server"
       ;;
   esac
 }
@@ -208,11 +215,16 @@ docker_wrapper_server_logs(){
 }
 docker_wrapper_server_attach(){
   if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
+    echo "(quit: Ctrl-C)"
     docker_wrapper_docker attach --sig-proxy=false $docker_wrapper_server_name
   else
     docker_wrapper_server_status_not_running
   fi
 }
+docker_wrapper_server_pull(){
+  DOCKER_WRAPPER_UPDATE=yes
+}
+
 docker_wrapper_server_status(){
   if [ -z "$(docker_wrapper_server_is_running -a)" ]; then
     docker_wrapper_server_status_not_running
