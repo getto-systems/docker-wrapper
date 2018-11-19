@@ -156,6 +156,9 @@ docker_wrapper_server(){
     logs)
       docker_wrapper_server_logs
       ;;
+    attach)
+      docker_wrapper_server_attach
+      ;;
     status)
       docker_wrapper_server_status
       ;;
@@ -203,7 +206,13 @@ docker_wrapper_server_logs(){
     docker_wrapper_server_status_not_running
   fi
 }
-
+docker_wrapper_server_attach(){
+  if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
+    docker_wrapper_docker attach $docker_wrapper_server_name
+  else
+    docker_wrapper_server_status_not_running
+  fi
+}
 docker_wrapper_server_status(){
   if [ -z "$(docker_wrapper_server_is_running -a)" ]; then
     docker_wrapper_server_status_not_running
