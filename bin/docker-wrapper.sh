@@ -208,7 +208,7 @@ docker_wrapper_server_logs(){
 }
 docker_wrapper_server_attach(){
   if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
-    docker_wrapper_docker attach $docker_wrapper_server_name
+    docker_wrapper_docker attach --sig-proxy=false $docker_wrapper_server_name
   else
     docker_wrapper_server_status_not_running
   fi
