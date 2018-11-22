@@ -1,0 +1,7 @@
+image: buildpack-deps:stretch
+
+release:
+  only:
+    - release@getto-systems-labo/docker-wrapper
+  script:
+    - ./.push_tags.sh
