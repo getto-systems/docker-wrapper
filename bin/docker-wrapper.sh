@@ -257,7 +257,7 @@ docker_wrapper_server_ps(){
   docker_wrapper_docker ps -f name=$docker_wrapper_server_name "$@"
 }
 docker_wrapper_server_is_running(){
-  docker_wrapper_server_ps --format "{{.ID}}" "$@"
+  docker_wrapper_server_ps --format "{{.ID}}" "$@" | grep $name'$'
 }
 
 
