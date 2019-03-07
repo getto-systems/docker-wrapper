@@ -7,6 +7,12 @@ declare docker_wrapper_has_tty
 declare docker_wrapper_server_name
 declare docker_wrapper_server_cmd
 
+docker_wrapper_rc(){
+  if [ -f "$DOCKER_WRAPPER_RC" ]; then
+    . $DOCKER_WRAPPER_RC
+  fi
+}
+
 docker_wrapper_docker(){
   local sudo
   if [ -n "$DOCKER_WRAPPER_WITH_SUDO" ]; then
@@ -83,14 +89,16 @@ docker_wrapper_volumes(){
 
 docker_wrapper_image(){
   local image
-  local tag_var_name
+  local map
   local tag
   local spec
 
   image=$1
 
-  tag_var_name=DOCKER_WRAPPER_IMAGE_$image
-  tag=${!tag_var_name}
+  map=DOCKER_WRAPPER_IMAGE_$image
+  if [ "$(LC_ALL=C type -t $map)" == function ]; then
+    tag=$($map)
+  fi
 
   if [ -n "$tag" ]; then
     case "$tag" in
@@ -106,7 +114,7 @@ docker_wrapper_image(){
 
     echo $spec
   else
-    >&2 echo "map not found for '$image'"
+    >&2 echo "map not found for '$image'. define function named '$map' in '$DOCKER_WRAPPER_RC(\$DOCKER_WRAPPER_RC)'"
     echo $image:-unknown
   fi
 }
@@ -119,7 +127,7 @@ docker_wrapper_update(){
 docker_wrapper_server(){
   local service
   local mode
-  local service_opts_name
+  local map
   local service_opts
 
   service=$1; shift
@@ -129,8 +137,10 @@ docker_wrapper_server(){
     >&2 echo "usage: docker_wrapper_server <service>"
     return
   fi
-  service_opts_name=DOCKER_WRAPPER_SERVER_OPTS_$service
-  service_opts=${!service_opts_name}
+  map=DOCKER_WRAPPER_SERVER_OPTS_$service
+  if [ "$(LC_ALL=C type -t $map)" == function ]; then
+    service_opts=$($map)
+  fi
 
   docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service
 
@@ -255,5 +265,6 @@ docker_wrapper_server_is_running(){
 # ENTRYPOINT
 #
 
+docker_wrapper_rc
 docker_wrapper_check_tty
 docker_wrapper_set_env_from_current_env
