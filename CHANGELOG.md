@@ -1,3 +1,7 @@
+# Version : 0.3.0
+
+fix: running check
+
 # Version : 0.2.0
 
 fix: map detection
