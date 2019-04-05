@@ -112,7 +112,7 @@ docker_wrapper_image(){
 }
 docker_wrapper_update(){
   if [ -n "$DOCKER_WRAPPER_UPDATE" ]; then
-    docker_wrapper_docker pull $spec >&2
+  docker pull $spec >&2
   fi
 }
 
@@ -203,14 +203,14 @@ docker_wrapper_server_purge(){
     docker_wrapper_server_status_not_running
   else
     echo "stop..."
-    docker_wrapper_docker stop $docker_wrapper_server_name
+    docker stop $docker_wrapper_server_name
     echo "rm..."
-    docker_wrapper_docker rm $docker_wrapper_server_name
+    docker rm $docker_wrapper_server_name
   fi
 }
 docker_wrapper_server_logs(){
   if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
-    docker_wrapper_docker logs $docker_wrapper_server_name
+    docker logs $docker_wrapper_server_name
   else
     docker_wrapper_server_status_not_running
   fi
@@ -218,7 +218,7 @@ docker_wrapper_server_logs(){
 docker_wrapper_server_attach(){
   if [ -n "$(docker_wrapper_server_is_running -a)" ]; then
     echo "(quit: Ctrl-C)"
-    docker_wrapper_docker attach --sig-proxy=false $docker_wrapper_server_name
+    docker attach --sig-proxy=false $docker_wrapper_server_name
   else
     docker_wrapper_server_status_not_running
   fi
@@ -246,7 +246,7 @@ docker_wrapper_server_status_container_exists(){
 }
 
 docker_wrapper_server_ps(){
-  docker_wrapper_docker ps -f name=$docker_wrapper_server_name "$@"
+  docker ps -f name=$docker_wrapper_server_name "$@"
 }
 docker_wrapper_server_is_running(){
   docker_wrapper_server_ps --format "{{.ID}} {{.Names}}" "$@" | grep $docker_wrapper_server_name'$'
