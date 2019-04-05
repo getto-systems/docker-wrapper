@@ -1,3 +1,7 @@
+# Version : 0.4.0
+
+remove: docker_wrapper_docker
+
 # Version : 0.3.0
 
 fix: running check
