@@ -13,14 +13,6 @@ docker_wrapper_rc(){
   fi
 }
 
-docker_wrapper_docker(){
-  local sudo
-  if [ -n "$DOCKER_WRAPPER_WITH_SUDO" ]; then
-    sudo="sudo"
-  fi
-  ${sudo} docker "$@"
-}
-
 docker_wrapper_env(){
   while [ $# -gt 0 ]; do
     docker_wrapper_envs[${#docker_wrapper_envs[@]}]=$1; shift
