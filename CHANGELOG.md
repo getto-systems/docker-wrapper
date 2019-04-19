@@ -1,3 +1,7 @@
+# Version : 0.6.0
+
+add: network option to server_opts
+
 # Version : 0.5.0
 
 fix: docker
