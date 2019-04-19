@@ -1,3 +1,7 @@
+# Version : 0.7.0
+
+add: DOCKER_WRAPPER_SERVER_SUFFIX
+
 # Version : 0.6.0
 
 add: network option to server_opts
