@@ -139,7 +139,7 @@ docker_wrapper_server(){
   fi
   service_opts="$service_opts --network $DOCKER_WRAPPER_SERVER_HOSTNAME"
 
-  docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service
+  docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service$DOCKER_WRAPPER_SERVER_SUFFIX
 
   if [ -n "$service_opts" ]; then
     docker_wrapper_env $service_opts
