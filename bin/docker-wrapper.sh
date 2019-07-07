@@ -2,6 +2,7 @@
 
 declare -a docker_wrapper_envs
 
+declare docker_wrapper_is_pipe_stdin
 declare docker_wrapper_has_tty
 
 declare docker_wrapper_server_name
@@ -63,13 +64,21 @@ docker_wrapper_set_env_from_current_env_include(){
 }
 
 docker_wrapper_check_tty(){
-  if [ -t 1 ]; then
-    docker_wrapper_has_tty=1
+  if [ -t 0 ]; then
+    if [ -t 1 ]; then
+      docker_wrapper_has_tty=1
+    fi
+  else
+    docker_wrapper_is_pipe_stdin=1
   fi
 }
 docker_wrapper_tty(){
   if [ -n "$docker_wrapper_has_tty" ]; then
     echo "-it --detach-keys ctrl-[,ctrl-["
+  else
+    if [ -n "$docker_wrapper_is_pipe_stdin" ]; then
+      echo "-i"
+    fi
   fi
 }
 
