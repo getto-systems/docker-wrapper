@@ -1,3 +1,7 @@
+# Version : 0.8.0
+
+fix: pipeline
+
 # Version : 0.7.0
 
 add: DOCKER_WRAPPER_SERVER_SUFFIX
