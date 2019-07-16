@@ -2,11 +2,11 @@
 
 declare -a docker_wrapper_envs
 
-declare docker_wrapper_is_pipe_stdin
 declare docker_wrapper_has_tty
 
 declare docker_wrapper_server_name
 declare docker_wrapper_server_cmd
+declare docker_wrapper_server_update
 
 docker_wrapper_rc(){
   if [ -f "$DOCKER_WRAPPER_RC" ]; then
@@ -64,21 +64,15 @@ docker_wrapper_set_env_from_current_env_include(){
 }
 
 docker_wrapper_check_tty(){
-  if [ -t 0 ]; then
-    if [ -t 1 ]; then
-      docker_wrapper_has_tty=1
-    fi
-  else
-    docker_wrapper_is_pipe_stdin=1
+  if [ -t 0 ] && [ -t 1 ] && [ -t 2 ]; then
+    docker_wrapper_has_tty=1
   fi
 }
 docker_wrapper_tty(){
   if [ -n "$docker_wrapper_has_tty" ]; then
-    echo "-it --detach-keys ctrl-[,ctrl-["
+    echo "-it -a stdin -a stdout -a stderr --detach-keys ctrl-[,ctrl-["
   else
-    if [ -n "$docker_wrapper_is_pipe_stdin" ]; then
-      echo "-i"
-    fi
+    echo "-i -a stdin -a stdout -a stderr"
   fi
 }
 
@@ -120,8 +114,8 @@ docker_wrapper_image(){
   fi
 }
 docker_wrapper_update(){
-  if [ -n "$DOCKER_WRAPPER_UPDATE" ]; then
-  docker pull $spec >&2
+  if [ -n "$docker_wrapper_server_update" ]; then
+    docker pull $spec >&2
   fi
 }
 
@@ -238,7 +232,7 @@ docker_wrapper_server_attach(){
   fi
 }
 docker_wrapper_server_pull(){
-  DOCKER_WRAPPER_UPDATE=yes
+  docker_wrapper_server_update=yes
 }
 
 docker_wrapper_server_status(){
