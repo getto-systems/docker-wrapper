@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version : 0.10.1
+
+- remove: CHANGELOG : See merge request getto-systems-base/labo/shell/docker-wrapper!23
+
+
 ## Version : 0.10.0
 
 - fix: gitlab-ci : See merge request getto-systems-base/labo/shell/docker-wrapper!22
