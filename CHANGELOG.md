@@ -1,3 +1,10 @@
+# CHANGELOG
+
+## Version : 0.10.0
+
+- fix: gitlab-ci : See merge request getto-systems-base/labo/shell/docker-wrapper!22
+- fix: DOCKER_WRAPPER_SERVER_HOSTNAME : See merge request getto-systems-base/labo/shell/docker-wrapper!21
+
 # Version : 0.9.0
 
 fix: functions
