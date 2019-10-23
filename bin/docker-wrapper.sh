@@ -120,6 +120,7 @@ docker_wrapper_update(){
 }
 
 docker_wrapper_server(){
+  local hostname
   local service
   local mode
   local map
@@ -127,6 +128,17 @@ docker_wrapper_server(){
 
   service=$1; shift
   mode=$1; shift
+
+  if [ -n "$DOCKER_WRAPPER_SERVER_HOSTNAME" ]; then
+    hostname=$DOCKER_WRAPPER_SERVER_HOSTNAME
+  else
+    if [ -n "$APP_ROOT" ]; then
+      hostname=$(echo $APP_ROOT | sed -e "s|^/apps/||" -e "s|/|-|g")
+    else
+      >&2 echo "DOCKER_WRAPPER_SERVER_HOSTNAME or APP_ROOT is not defined"
+      return
+    fi
+  fi
 
   if [ -z "$service" ]; then
     >&2 echo "usage: docker_wrapper_server <service>"
@@ -137,12 +149,12 @@ docker_wrapper_server(){
     service_opts=$($map)
   fi
 
-  if [ -z "$(docker network ls --format "{{.Name}}" | grep $DOCKER_WRAPPER_SERVER_HOSTNAME'$')" ]; then
-    docker network create $DOCKER_WRAPPER_SERVER_HOSTNAME
+  if [ -z "$(docker network ls --format "{{.Name}}" | grep $hostname'$')" ]; then
+    docker network create $hostname
   fi
-  service_opts="$service_opts --network $DOCKER_WRAPPER_SERVER_HOSTNAME"
+  service_opts="$service_opts --network $hostname"
 
-  docker_wrapper_server_name=$DOCKER_WRAPPER_SERVER_HOSTNAME-$service$DOCKER_WRAPPER_SERVER_SUFFIX
+  docker_wrapper_server_name=$hostname-$service$DOCKER_WRAPPER_SERVER_SUFFIX
 
   if [ -n "$service_opts" ]; then
     docker_wrapper_env $service_opts
