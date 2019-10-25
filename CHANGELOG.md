@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version : 0.11.0
+
+- fix: network setting : See merge request getto-systems-base/labo/shell/docker-wrapper!24
+
+
 ## Version : 0.10.1
 
 - remove: CHANGELOG : See merge request getto-systems-base/labo/shell/docker-wrapper!23
