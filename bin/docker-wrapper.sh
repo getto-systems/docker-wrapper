@@ -149,10 +149,12 @@ docker_wrapper_server(){
     service_opts=$($map)
   fi
 
-  if [ -z "$(docker network ls --format "{{.Name}}" | grep $hostname'$')" ]; then
-    docker network create $hostname
+  if [ -n "$DOCKER_WRAPPER_SERVER_NETWORK" ]; then
+    if [ -z "$(docker network ls --format "{{.Name}}" | grep $hostname'$')" ]; then
+      docker network create $DOCKER_WRAPPER_SERVER_NETWORK
+    fi
+    service_opts="$service_opts --network $DOCKER_WRAPPER_SERVER_NETWORK"
   fi
-  service_opts="$service_opts --network $hostname"
 
   docker_wrapper_server_name=$hostname-$service$DOCKER_WRAPPER_SERVER_SUFFIX
 
