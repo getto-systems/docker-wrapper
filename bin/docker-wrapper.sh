@@ -25,6 +25,8 @@ docker_wrapper_set_env_from_current_env(){
   local line
   local env_file
 
+  : ${DOCKER_WRAPPER_EXCLUDE_ENVS:=PATH,LANG,FPATH,_*,ZPLUG_*,DOCKER_WRAPPER_*,TERM*,SUDO*,*USER,USERNAME,LOGNAME,TMUX*,LS_COLORS,DIRENV*,*PWD}
+
   ifs_org=$IFS
   IFS=$'\n'
   for line in $(env); do
@@ -48,8 +50,6 @@ docker_wrapper_set_env_from_current_env(){
 }
 docker_wrapper_set_env_from_current_env_include(){
   local exclude_env
-
-  : ${DOCKER_WRAPPER_EXCLUDE_ENVS:=PATH,LANG,FPATH,_*,ZPLUG_*,DOCKER_WRAPPER_*,TERM*,SUDO*,*USER,USERNAME,LOGNAME}
 
   ifs_org=$IFS
   IFS=,
@@ -150,7 +150,7 @@ docker_wrapper_server(){
   fi
 
   if [ -n "$DOCKER_WRAPPER_SERVER_NETWORK" ]; then
-    if [ -z "$(docker network ls --format "{{.Name}}" | grep $hostname'$')" ]; then
+    if [ -z "$(docker network ls --format "{{.Name}}" | grep $DOCKER_WRAPPER_SERVER_NETWORK'$')" ]; then
       docker network create $DOCKER_WRAPPER_SERVER_NETWORK
     fi
     service_opts="$service_opts --network $DOCKER_WRAPPER_SERVER_NETWORK"
