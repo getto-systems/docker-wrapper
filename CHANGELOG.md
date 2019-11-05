@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version : 0.12.0
+
+- fix: build env, network : See merge request getto-systems-base/labo/shell/docker-wrapper!25
+
+
 ## Version : 0.11.0
 
 - fix: network setting : See merge request getto-systems-base/labo/shell/docker-wrapper!24
