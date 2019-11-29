@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version : 0.12.1
+
+- fix: gitlab-ci : See merge request getto-systems-base/labo/shell/docker-wrapper!27
+- fix: set-window-title : See merge request getto-systems-base/labo/shell/docker-wrapper!26
+
+
 ## Version : 0.12.0
 
 - fix: build env, network : See merge request getto-systems-base/labo/shell/docker-wrapper!25
