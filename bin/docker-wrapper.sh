@@ -69,10 +69,13 @@ docker_wrapper_check_tty(){
   fi
 }
 docker_wrapper_tty(){
+  echo "$(docker_wrapper_tty_without_attach) -a stdin -a stdout -a stderr"
+}
+docker_wrapper_tty_without_attach(){
   if [ -n "$docker_wrapper_has_tty" ]; then
-    echo "-it -a stdin -a stdout -a stderr --detach-keys ctrl-[,ctrl-["
+    echo "-it --detach-keys ctrl-[,ctrl-["
   else
-    echo "-i -a stdin -a stdout -a stderr"
+    echo "-i"
   fi
 }
 
