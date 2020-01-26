@@ -129,15 +129,10 @@ docker_wrapper_server(){
   service=$1; shift
   mode=$1; shift
 
-  if [ -n "$DOCKER_WRAPPER_SERVER_HOSTNAME" ]; then
-    hostname=$DOCKER_WRAPPER_SERVER_HOSTNAME
-  else
-    if [ -n "$APP_ROOT" ]; then
-      hostname=$(echo $APP_ROOT | sed -e "s|^/apps/||" -e "s|/|-|g")
-    else
-      >&2 echo "DOCKER_WRAPPER_SERVER_HOSTNAME or APP_ROOT is not defined"
-      return
-    fi
+  hostname=$(docker_wrapper_server_hostname)
+  if [ -z "$hostname" ]; then
+    >&2 echo "DOCKER_WRAPPER_SERVER_HOSTNAME or APP_ROOT is not defined"
+    return
   fi
 
   if [ -z "$service" ]; then
@@ -210,6 +205,15 @@ docker_wrapper_server(){
       ;;
   esac
 }
+docker_wrapper_server_hostname(){
+  if [ -n "$DOCKER_WRAPPER_SERVER_HOSTNAME" ]; then
+    echo $DOCKER_WRAPPER_SERVER_HOSTNAME
+  else
+    if [ -n "$APP_ROOT" ]; then
+      echo $APP_ROOT | sed -e "s|^/apps/||" -e "s|/|-|g"
+    fi
+  fi
+}
 docker_wrapper_server_name(){
   echo --name $docker_wrapper_server_name -h $docker_wrapper_server_name
 }
@@ -272,6 +276,13 @@ docker_wrapper_server_ps(){
 }
 docker_wrapper_server_is_running(){
   docker_wrapper_server_ps --format "{{.ID}} {{.Names}}" "$@" | grep $docker_wrapper_server_name'$'
+}
+
+docker_wrapper_container_is_running(){
+  docker ps -f name=$1 --format "{{.ID}} {{.Names}}" | grep $1'$'
+}
+docker_wrapper_container_is_exists(){
+  docker ps -f name=$1 --format "{{.ID}} {{.Names}}" -a | grep $1'$'
 }
 
 
