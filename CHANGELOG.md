@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version : 0.13.0
+
+- add: background container support : See merge request getto-systems-base/labo/shell/docker-wrapper!32
+
+
 ## Version : 0.12.3
 
 - fix: gitlab-ci : See merge request getto-systems-base/labo/shell/docker-wrapper!30
