@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version : 0.14.0
+
+- add: tty without attach option : See merge request getto-systems-base/labo/shell/docker-wrapper!34
+
+
 ## Version : 0.13.0
 
 - add: background container support : See merge request getto-systems-base/labo/shell/docker-wrapper!32
