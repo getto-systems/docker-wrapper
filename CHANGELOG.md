@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version : 0.14.2
+
+- fix: gitlab ci : See merge request getto-systems-base/labo/shell/docker-wrapper!37
+
+
 ## Version : 0.14.1
 
 
